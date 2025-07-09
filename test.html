@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Parallax Scroll</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body, html {
+      height: 300vh; /* Long scroll */
+      overflow-x: hidden;
+      background: #000f24;
+    }
+
+    .container {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      overflow: hidden;
+    }
+
+    .layer {
+      position: absolute;
+      width: 100vw; /* Scale to browser width */
+      height: auto; /* Maintain aspect ratio */
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.2s ease;
+      aspect-ratio: 1 / 1; /* Maintain 1:1 ratio */
+    }
+
+    .sky {
+      z-index: 1;
+      background-image: url('BIG_Sky.png');
+    }
+
+    .hill-lit {
+      z-index: 2;
+      background-image: url('BIG_HillLit.png');
+    }
+
+    .hill-dark {
+      z-index: 3;
+      background-image: url('BIG_HillDark.png');
+    }
+
+    .rim-light {
+      z-index: 4;
+      background-image: url('BIG_RimLight.png');
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="layer sky"></div>
+    <div class="layer hill-lit"></div>
+    <div class="layer hill-dark"></div>
+    <div class="layer rim-light"></div>
+  </div>
+
+  <script>
+    const sky = document.querySelector('.sky');
+    const hillDark = document.querySelector('.hill-dark');
+    const rimLight = document.querySelector('.rim-light');
+
+    function updateScrollEffects() {
+      const scrollY = window.scrollY;
+      const maxScroll = window.innerHeight;
+
+      const progress = Math.min(scrollY / maxScroll, 1);
+
+      // Sky moves UP from a lower position into alignment
+      const offset = 300; // adjust to set how far below the sky starts
+      sky.style.transform = `translate(-50%, calc(-50% + ${offset - progress * offset}px))`;
+
+      // Fade hill-dark out, and rim-light in
+      hillDark.style.opacity = `${1 - progress}`;
+      rimLight.style.opacity = `${progress}`;
+    }
+
+    window.addEventListener('scroll', updateScrollEffects);
+    window.addEventListener('load', () => {
+      // slight delay ensures layout is stable before running scroll logic
+      setTimeout(updateScrollEffects, 50);
+    });
+  </script>
+</body>
+</html>
