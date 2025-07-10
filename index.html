@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BIG Test</title>
+  <title>Parallax Scroll</title>
   <style>
     * {
       margin: 0;
@@ -45,7 +45,6 @@
     .sky {
       z-index: 1;
       background-image: url('BIG_Sky.png');
-      opacity: 0; /* starts invisible */
     }
 
     .hill-lit {
@@ -78,30 +77,39 @@
   const hillDark = document.querySelector('.hill-dark');
   const rimLight = document.querySelector('.rim-light');
 
-  function updateScrollEffects() {
+  let targetProgress = 0;
+  let currentProgress = 0;
+
+  function updateTargetProgress() {
     const scrollY = window.scrollY;
     const maxScroll = window.innerHeight;
-
-    const progress = Math.min(scrollY / maxScroll, 1);
-
-    // Offset is proportional to viewport width
-    const maxOffset = window.innerWidth * 0.2; // 20% of page width
-    const skyTranslateY = maxOffset - progress * maxOffset;
-    sky.style.transform = `translateX(-50%) translateY(${skyTranslateY}px)`;
-
-    // Fade in sky as it rises
-    sky.style.opacity = `${progress}`;
-
-    // Fade hill-dark out, rim-light in
-    hillDark.style.opacity = `${1 - progress}`;
-    rimLight.style.opacity = `${progress}`;
+    targetProgress = Math.min(scrollY / maxScroll, 1);
   }
 
-  window.addEventListener('scroll', updateScrollEffects);
-  window.addEventListener('resize', updateScrollEffects); // Recalculate on resize
+  function animate() {
+    // Ease currentProgress toward targetProgress
+    const easing = 0.05;
+    currentProgress += (targetProgress - currentProgress) * easing;
+
+    // Calculate sky offset relative to page width
+    const maxOffset = window.innerWidth * 0.2;
+    const skyTranslateY = maxOffset - currentProgress * maxOffset;
+    sky.style.transform = `translateX(-50%) translateY(${skyTranslateY}px)`;
+
+    // Only apply opacity to hillDark and rimLight
+    hillDark.style.opacity = `${1 - currentProgress}`;
+    rimLight.style.opacity = `${currentProgress}`;
+
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener('scroll', updateTargetProgress);
+  window.addEventListener('resize', updateTargetProgress);
   window.addEventListener('load', () => {
-    setTimeout(updateScrollEffects, 50);
+    updateTargetProgress();
+    requestAnimationFrame(animate);
   });
 </script>
+
 </body>
 </html>
