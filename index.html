@@ -8,6 +8,7 @@
     * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
     body, html {
@@ -27,23 +28,24 @@
 
     .layer {
       position: absolute;
-      width: 100vw; /* Scale to browser width */
-      height: auto; /* Maintain aspect ratio */
-      top: 50%;
+      width: 100vw;
+      height: auto;
+      top: 0; /* Align to top instead of center */
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translateX(-50%); /* Only center horizontally */
       background-size: contain;
       background-repeat: no-repeat;
-      background-position: center;
+      background-position: top center;
       pointer-events: none;
-      opacity: 1;
       transition: opacity 0.2s ease;
-      aspect-ratio: 1 / 1; /* Maintain 1:1 ratio */
+      aspect-ratio: 1 / 1;
+      opacity: 1;
     }
 
     .sky {
       z-index: 1;
       background-image: url('BIG_Sky.png');
+      opacity: 0; /* starts invisible */
     }
 
     .hill-lit {
@@ -82,18 +84,21 @@
 
       const progress = Math.min(scrollY / maxScroll, 1);
 
-      // Sky moves UP from a lower position into alignment
-      const offset = 300; // adjust to set how far below the sky starts
-      sky.style.transform = `translate(-50%, calc(-50% + ${offset - progress * offset}px))`;
+      // Sky rises from a lowered position but capped so it doesn't go too low
+      const maxOffset = 200; // how far down the sky starts
+      const skyTranslateY = maxOffset - progress * maxOffset;
+      sky.style.transform = `translateX(-50%) translateY(${skyTranslateY}px)`;
 
-      // Fade hill-dark out, and rim-light in
+      // Sky fades in as it rises
+      sky.style.opacity = `${progress}`;
+
+      // HillDark fades out, RimLight fades in
       hillDark.style.opacity = `${1 - progress}`;
       rimLight.style.opacity = `${progress}`;
     }
 
     window.addEventListener('scroll', updateScrollEffects);
     window.addEventListener('load', () => {
-      // slight delay ensures layout is stable before running scroll logic
       setTimeout(updateScrollEffects, 50);
     });
   </script>
