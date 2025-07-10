@@ -73,34 +73,35 @@
     <div class="layer rim-light"></div>
   </div>
 
-  <script>
-    const sky = document.querySelector('.sky');
-    const hillDark = document.querySelector('.hill-dark');
-    const rimLight = document.querySelector('.rim-light');
+<script>
+  const sky = document.querySelector('.sky');
+  const hillDark = document.querySelector('.hill-dark');
+  const rimLight = document.querySelector('.rim-light');
 
-    function updateScrollEffects() {
-      const scrollY = window.scrollY;
-      const maxScroll = window.innerHeight;
+  function updateScrollEffects() {
+    const scrollY = window.scrollY;
+    const maxScroll = window.innerHeight;
 
-      const progress = Math.min(scrollY / maxScroll, 1);
+    const progress = Math.min(scrollY / maxScroll, 1);
 
-      // Sky rises from a lowered position but capped so it doesn't go too low
-      const maxOffset = 200; // how far down the sky starts
-      const skyTranslateY = maxOffset - progress * maxOffset;
-      sky.style.transform = `translateX(-50%) translateY(${skyTranslateY}px)`;
+    // Offset is proportional to viewport width
+    const maxOffset = window.innerWidth * 0.2; // 20% of page width
+    const skyTranslateY = maxOffset - progress * maxOffset;
+    sky.style.transform = `translateX(-50%) translateY(${skyTranslateY}px)`;
 
-      // Sky fades in as it rises
-      sky.style.opacity = `${progress}`;
+    // Fade in sky as it rises
+    sky.style.opacity = `${progress}`;
 
-      // HillDark fades out, RimLight fades in
-      hillDark.style.opacity = `${1 - progress}`;
-      rimLight.style.opacity = `${progress}`;
-    }
+    // Fade hill-dark out, rim-light in
+    hillDark.style.opacity = `${1 - progress}`;
+    rimLight.style.opacity = `${progress}`;
+  }
 
-    window.addEventListener('scroll', updateScrollEffects);
-    window.addEventListener('load', () => {
-      setTimeout(updateScrollEffects, 50);
-    });
-  </script>
+  window.addEventListener('scroll', updateScrollEffects);
+  window.addEventListener('resize', updateScrollEffects); // Recalculate on resize
+  window.addEventListener('load', () => {
+    setTimeout(updateScrollEffects, 50);
+  });
+</script>
 </body>
 </html>
